@@ -1,0 +1,8 @@
+steps:
+  # Instalar dependencias
+  - name: "gcr.io/cloud-builders/npm"
+    args: ["install"]
+  
+  # Iniciar la aplicación
+  - name: "gcr.io/cloud-builders/npm"
+    args: ["start"]
