@@ -7,6 +7,7 @@ const senCodeEmail = require("../helpers/sendCodeEmail");
 
 const loginPost = async (req, res = response) => {
   const { email, password } = req.body;
+ 
   try {
     const user = await usuario.findOne({ where: { email } });
     if (!user) {
@@ -28,7 +29,7 @@ const loginPost = async (req, res = response) => {
     if (user.authenticated !== "1") {
       senCodeEmail(email)
     }
-
+    
     return res.json({
       token,
       authenticated: user.authenticated,
@@ -38,7 +39,7 @@ const loginPost = async (req, res = response) => {
 
   } catch (error) {
     return res.status(500).json({
-      msg: "Ocurrió un error."
+      msg: error
     });
   }
 };

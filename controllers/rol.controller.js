@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 
 const rolGet = async (req, res = response) => {
     const rols = await rol.findAll();
-    console.log(rols);
     res.json({
       rols
     })

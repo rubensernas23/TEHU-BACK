@@ -1,23 +1,24 @@
 const nodemailer = require("nodemailer");
-const { generarJWT2 } = require("../helpers/generar-jwt");
+const { generarJWT2 } = require("./generar-jwt-2");
 
-
-const transporter = nodemailer.createTransport({
-    host: "mail.jc2r.com",
+const transporter1 = nodemailer.createTransport({
+    host: "smtp.gmail.com",
     port: 465,
     secure: true,
     auth: {
-        // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-        user: 'admin@jc2r.com',
-        pass: 'controlremoto11'
-    }
+        user: 'programarf@gmail.com',
+        pass: 'ofed kyqc dmmh fqhb'
+    },
+    tls: {
+        rejectUnauthorized: false,
+    },
 });
 
-const sendPassEmail = async (email, password, uid) => {
+const SendPass = async(email, password, uid) => {
     try {
         const token = await generarJWT2(uid);
-        const info = await transporter.sendMail({
-            from: '"Tehu System 🛰️" <admin@jc2r.com>',
+        const info = await transporter1.sendMail({
+            from: '"Tehu System 🛰️" <programarf@gmail.com>',
             to: email,
             subject: `Usuario Creado🥷 ✔`,
             text: "Bienvenido",
@@ -29,8 +30,8 @@ const sendPassEmail = async (email, password, uid) => {
         });
         console.log("Message sent: %s", info.messageId);
     } catch (error) {
-        console.error(error);
+        console.error(error.errors);
     }
-};
+}
 
-module.exports = sendPassEmail
+module.exports = SendPass

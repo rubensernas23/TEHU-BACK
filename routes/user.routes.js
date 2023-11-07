@@ -5,15 +5,13 @@ const { validarJWT } = require("../middlewares/validar-jwt");
 
 const router = Router();
 
+router.post("/", userPost);
+
 router.get("/", [
     validarJWT
 ], userGet);
 
-router.post("/", userPost);
-
-router.post("/create", [
-    validarJWT
-], userCreatePost);
+router.get("/list/:id", getSubordinateUsers);
 
 router.put("/", [validarJWT], userPut);
 
@@ -21,11 +19,13 @@ router.get("/currency", [
     validarJWT
 ], userInfo);
 
-router.get("/list/:id", getSubordinateUsers);
-
 router.get("/list/:id/:rol", listRol);
 
-// router.delete("/", userDelete);
-router.delete("/:id", userDelete);
+
+router.post("/create", [
+    validarJWT
+], userCreatePost);
+
+router.delete("/delete/:id", userDelete);
 
 module.exports = router;

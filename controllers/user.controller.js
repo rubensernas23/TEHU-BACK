@@ -1,68 +1,92 @@
 const { response } = require('express');
-
 const user = require('../models/user');
-const bcrypt = require('bcrypt');
+const Company = require('../models/company');
 const rol = require("../models/rol");
 const jwt = require('jsonwebtoken');
-const sendPassEmail = require('../helpers/sendPassEmail ');
+const bcrypt = require('bcrypt');
+const SendPass = require('../helpers/SendPass');
+const senCodeEmail = require("../helpers/sendCodeEmail");
+
 
 const userPost = async (req, res = response) => {
   const { name, position, phone, email, password, authenticated, rolId, subordinateId, identificationType, identificationNumber, company } = req.body;
-
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await user.create({
-      name,
-      position,
-      phone,
-      email,
-      password: hashedPassword,
-      authenticated,
-      rolId,
-      subordinateId,
-      identificationType,
-      identificationNumber,
-      company
+    const existingCompany = await Company.findOne({
+      where: {
+        name: company,
+      },
     });
 
-    res.json({
-      msg: 'Usuario creado correctamente',
-      user: {
-        id: newUser.id,
-        name: newUser.name,
-        phone: newUser.phone,
-        email: newUser.email,
-        position: newUser.position,
-        rolId: newUser.rolId,
-        identificationType: newUser.identificationType,
-        identificationNumber: newUser.identificationNumber,
-        company: newUser.company
-      }
-    });
+    if (existingCompany) {
+      const newUser = await user.create({
+        name,
+        position,
+        phone,
+        email,
+        password: hashedPassword,
+        authenticated,
+        rolId,
+        subordinateId,
+        identificationType,
+        identificationNumber,
+        companyId: existingCompany.id
+      });
+      res.json({
+        msg: 'Usuario creado correctamente',
+        user: newUser,
+        company: existingCompany,
+      });
+    } else {
+      const newCompany = await Company.create({
+        name: company,
+      });
+
+      const newUser = await user.create({
+        name,
+        position,
+        phone,
+        email,
+        password: hashedPassword,
+        authenticated,
+        rolId,
+        subordinateId,
+        identificationType,
+        identificationNumber,
+        companyId: newCompany.id,
+      });
+      res.json({
+        msg: 'Usuario y compañía creados correctamente',
+        user: newUser,
+        company: newCompany,
+      });
+    }
   } catch (error) {
-    console.log(error);
     res.status(500).json({
-      msg: error.errors,
+      msg: 'Error al crear el usuario o la compañía',
+      error: error.errors,
     });
   }
 };
 
 const userCreatePost = async (req, res = response) => {
-  const { name, position, phone, email, password, authenticated, rolId, identificationType, identificationNumber, company } = req.body;
-  console.log(req.body);
+  const { name, phone, email, password, authenticated, rolId, identificationType, identificationNumber } = req.body;
   const token = req.header('token');
   if (!token) {
     return res.status(401).json({ msg: 'Token de autenticación no proporcionado' });
   }
   const userload = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
-  console.log('USUARIO',req.user.company);
-  const userId= userload.uid
-
+  const userId = userload.uid
+  const adminCompanie = await user.findOne({
+    where: {
+      id: userId,
+    },
+  });
+   
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await user.create({
       name,
-      position,
       phone,
       email,
       password: hashedPassword,
@@ -70,7 +94,7 @@ const userCreatePost = async (req, res = response) => {
       rolId,
       identificationType,
       identificationNumber,
-      company: req.user.company,
+      companyId: adminCompanie.companyId,
       subordinateId : userId
     });
 
@@ -81,7 +105,6 @@ const userCreatePost = async (req, res = response) => {
         name: newUser.name,
         phone: newUser.phone,
         email: newUser.email,
-        position: newUser.position,
         rolId: newUser.rolId,
         identificationType: newUser.identificationType,
         identificationNumber: newUser.identificationNumber,
@@ -89,7 +112,7 @@ const userCreatePost = async (req, res = response) => {
         company: newUser.company
       }
     });
-    sendPassEmail(email, password, newUser.id)
+    SendPass(email, password, newUser.id)
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -101,11 +124,10 @@ const userCreatePost = async (req, res = response) => {
 const userGet = async (req, res = response) => {
   try {
     const users = await user.findAll({
-      attributes: ['id', 'name', 'phone', 'email', 'rolId', 'position', 'identificationType', 'identificationNumber', 'company'],
+      attributes: ['id', 'name', 'phone', 'email', 'rolId', 'position', 'identificationType', 'identificationNumber', 'companyId'],
     });
 
     const roleIds = users.map(user => user.rolId);
-    console.log('roleIdsroleIds', roleIds);
     const roles = await rol.findAll({
       where: {
         id: roleIds
@@ -115,7 +137,7 @@ const userGet = async (req, res = response) => {
 
     const formattedUsers = users.map(user => {
       const role = roles.find(role => role.id === user.rolId);
-      const { id, name, phone, email, position, identificationType, identificationNumber, company, rolId } = user;
+      const { id, name, phone, email, position, identificationType, identificationNumber, companyId, rolId } = user;
       return {
         id,
         name,
@@ -124,7 +146,7 @@ const userGet = async (req, res = response) => {
         position,
         identificationType,
         identificationNumber,
-        company,
+        companyId,
         rolId: rolId,
         roleName: role ? role.Name : null // Incluye el nombre del rol como 'roleName'
       };
@@ -146,8 +168,10 @@ const getSubordinateUsers = async (req, res = response) => {
       where: {
         subordinateId: subordinateId
       },
-      attributes: ['id', 'name', 'phone', 'email', 'rolId', 'company', 'identificationNumber'] // Seleccionar los campos deseados
+      attributes: ['id', 'name', 'phone', 'email', 'rolId', 'companyId', 'identificationNumber'] // Seleccionar los campos deseados
     });
+
+    console.log(users);
 
     // Obtener los nombres de los roles asociados a los usuarios
     const roleIds = users.map(user => user.rolId);
@@ -166,7 +190,7 @@ const getSubordinateUsers = async (req, res = response) => {
         name: user.name,
         phone: user.phone,
         email: user.email,
-        company: user.company,
+        companyId: user.company,
         identificationNumber: user.identificationNumber,
         rol: role ? role.Name : null
       };
@@ -176,7 +200,6 @@ const getSubordinateUsers = async (req, res = response) => {
       users: usersWithRoles
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       msg: error.errors,
     });
@@ -185,10 +208,9 @@ const getSubordinateUsers = async (req, res = response) => {
 
 const userPut = async (req, res = response) => {
   const id =  req.user.id
-  console.log('el id del usuario es : ', id);
   try {
     // Obtener los datos actualizados del usuario del cuerpo de la solicitud
-    const { name, position, phone, email, password, authenticated, rol } = req.body;
+    const { name, position, password, authenticated, rol } = req.body;
 
     // Buscar el usuario existente en la base de datos
     const existingUser = await user.findByPk(id);
@@ -200,8 +222,6 @@ const userPut = async (req, res = response) => {
     // Actualizar los campos del usuario con los nuevos valores proporcionados
     existingUser.name = name;
     existingUser.position = position;
-    existingUser.phone = phone;
-    existingUser.email = email;
     existingUser.authenticated = authenticated;
     existingUser.rol = rol;
 
@@ -259,7 +279,7 @@ const listRol = async (req, res = response) => {
       where: {
         rolId: subordinateId, // Filtra por el rol requerido
       },
-      attributes: ['id', 'name', 'phone', 'email', 'rolId', 'position', 'identificationType', 'identificationNumber', 'company'],
+      attributes: ['id', 'name', 'phone', 'email', 'rolId', 'position', 'identificationType', 'identificationNumber', 'companyId'],
     });
     const roleIds = users.map(user => user.rolId);
     const roles = await rol.findAll({
@@ -276,7 +296,7 @@ const listRol = async (req, res = response) => {
         name: user.name,
         phone: user.phone,
         email: user.email,
-        company: user.company,
+        companyId: user.companyId,
         rol: role ? role.Name : null
       };
     });
@@ -305,7 +325,7 @@ const userInfo = async (req, res = response) => {
     const userId= userload.uid
     
     const currency = await user.findByPk(userId, {
-      attributes: ['id', 'name', 'phone', 'email', 'rolId', 'position', 'identificationType', 'identificationNumber', 'company'],
+      attributes: ['id', 'name', 'phone', 'email', 'rolId', 'position', 'identificationType', 'identificationNumber', 'companyId'],
     });
     if (!currency) {
       return res.status(404).json({ msg: 'Usuario no encontrado' });
@@ -319,7 +339,7 @@ const userInfo = async (req, res = response) => {
       position: currency.position,
       identificationType: currency.identificationType,
       identificationNumber: currency.identificationNumber,
-      company: currency.company,
+      companyId: currency.companyId,
     };
     res.json({ user: formattedUser });
   } catch (error) {

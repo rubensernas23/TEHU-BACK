@@ -23,6 +23,9 @@ const device = db.define("device", {
   // id_data: {
   //   type: DataTypes.INTEGER,
   // }
+ /*  progress: {
+    type: DataTypes.INTEGER
+  }, */
 });
 
 device.sync()
