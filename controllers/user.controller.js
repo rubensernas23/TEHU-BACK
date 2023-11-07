@@ -5,7 +5,6 @@ const rol = require("../models/rol");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const SendPass = require('../helpers/SendPass');
-const senCodeEmail = require("../helpers/sendCodeEmail");
 
 
 const userPost = async (req, res = response) => {
@@ -315,13 +314,11 @@ const listRol = async (req, res = response) => {
 
 const userInfo = async (req, res = response) => {
   try {
-    
     const token = req.header('token');
     if (!token) {
       return res.status(401).json({ msg: 'Token de autenticación no proporcionado' });
     }
     const userload = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
-    console.log(userload.uid);
     const userId= userload.uid
     
     const currency = await user.findByPk(userId, {

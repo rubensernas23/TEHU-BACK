@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 const { generarJWT2 } = require("./generar-jwt-2");
 
-const transporter1 = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
     secure: true,
@@ -17,7 +17,7 @@ const transporter1 = nodemailer.createTransport({
 const SendPass = async(email, password, uid) => {
     try {
         const token = await generarJWT2(uid);
-        const info = await transporter1.sendMail({
+        const info = await transporter.sendMail({
             from: '"Tehu System 🛰️" <programarf@gmail.com>',
             to: email,
             subject: `Usuario Creado🥷 ✔`,

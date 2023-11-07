@@ -11,7 +11,6 @@ const loginPost = async (req, res = response) => {
   try {
     const user = await usuario.findOne({ where: { email } });
     if (!user) {
-      console.log("El correo no se encuentra en la base de datos.");
       return res.status(400).json({
         msg: "El correo no existe."
       });
@@ -48,7 +47,6 @@ const loginCodeValidate = async (req, res = response) => {
   const { email, code} = req.user
   try {
     if (code === req.body.code) {
-      console.log('validando el codigo...');
       const user = await usuario.findOne({ where: { email } });
       user.authenticated = true
       user.save()
