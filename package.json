@@ -1,7 +1,7 @@
 {
   "name": "08-restserver",
   "version": "1.0.0",
-  "description": "",
+  "description": "PWA TEHU SYSTEM",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -26,5 +26,14 @@
     "nodemailer": "^6.9.3",
     "sequelize": "^6.21.3",
     "uniqid": "^5.4.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rubensernas23/TEHU-BACK.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rubensernas23/TEHU-BACK/issues"
+  },
+  "homepage": "https://github.com/rubensernas23/TEHU-BACK#readme"
 }
