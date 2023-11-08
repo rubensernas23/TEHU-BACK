@@ -35,9 +35,14 @@ const user = db.define("user", {
       },
     identificationNumber: {
         type: DataTypes.STRING,
+        unique: true
     },
     rolId: {
         type: DataTypes.INTEGER,
+        references: {
+            model: rol,
+            key: 'id',
+        },
     },
     companyId: {
         type: DataTypes.INTEGER,
@@ -49,6 +54,7 @@ const user = db.define("user", {
 });
 
 user.belongsTo(Company, { foreignKey: 'companyId' });
+user.belongsTo(rol, { foreignKey: 'rolId' });
 
 user.sync()
 

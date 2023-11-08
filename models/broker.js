@@ -13,7 +13,7 @@ broker.on('ready', () => {
 
 // este evento se ejecuta cuando un cliente se conecta, publicador o suscriptor
 broker.on('clientConnected', (cliente) => {
-    console.log('hola');
+    console.log('clientConnected');
 })
 
 // se ejecuta cuando el broker sercibe una publicación, esto es de test

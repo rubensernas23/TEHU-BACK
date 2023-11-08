@@ -8,7 +8,7 @@ const router = Router();
 
 router.post("/",[
     check('email', 'el correo es obligatorio').isEmail().not(),
-    validarCampos
+    //validarCampos
 ], loginPost);
 
 router.post("/token",[

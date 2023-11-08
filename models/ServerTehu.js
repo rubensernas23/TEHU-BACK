@@ -35,9 +35,7 @@ class ServerTehu {
   async dbConnection() {
     try {
       await db.authenticate();
-      console.log('database online...');
     } catch (error) {
-      console.log('problemas al conectar la base de datos...');
       console.log(error);
     }
   }

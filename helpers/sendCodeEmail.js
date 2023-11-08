@@ -2,16 +2,17 @@ const nodemailer = require("nodemailer");
 const usuario = require("../models/user");
 const generateRandomCode = require("./randomNumber");
 
-
 const transporter = nodemailer.createTransport({
-    host: "mail.jc2r.com",
+    host: "smtp.gmail.com",
     port: 465,
     secure: true,
     auth: {
-        // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-        user: 'admin@jc2r.com',
-        pass: 'controlremoto11'
-    }
+        user: 'programarf@gmail.com',
+        pass: 'ofed kyqc dmmh fqhb'
+    },
+    tls: {
+        rejectUnauthorized: false,
+    },
 });
 
 const senCodeEmail = async (email) => {

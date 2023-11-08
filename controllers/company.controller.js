@@ -10,13 +10,11 @@ const companyGet = async (req, res = response) => {
 
 const companyCreatePost = async (req, res = response) => {
     const { name  } = req.body;
-    console.log(req.body);
     const token = req.header('token');
     if (!token) {
       return res.status(401).json({ msg: 'Token de autenticación no proporcionado' });
     }
     const userload = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
-    console.log('USUARIO',req.user.company);
     const userId= userload.uid
   
     try {
