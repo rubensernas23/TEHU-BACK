@@ -26,6 +26,9 @@ const cluster = db.define("cluster", {
         model: Device,
         key: 'id',
     },
+  },
+  devices: {
+    type: DataTypes.STRING,
   }
 });
 
