@@ -7,11 +7,25 @@ const { post } = require('../routes/cluster.routes');
 const clusterlist = async (req, res = response) => {
     try {
         const id = req.params.id
-        const list = await cluster.findAll({
+        const query = await cluster.findAll({
         where: {
             companyId: id,
         },
-        attributes: ['id', 'name']
+        attributes: ['id', 'name','devices']
+        })
+        //console.log(list);
+        const list = []
+        query.forEach((item) => {
+            const arreglo = JSON.parse(item.devices);  // Convierte la cadena en un arreglo de JavaScript
+            const devices_count = arreglo.length;
+
+            console.log(devices_count);
+            list.push({
+                "id": item.id,
+                "name": item.name,
+                "devices_count": devices_count
+            })
+            
         })
         res.json({
             list
