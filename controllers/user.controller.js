@@ -345,6 +345,28 @@ const userInfo = async (req, res = response) => {
   }
 };
 
+const userDetails = async (req, res = response) => {
+  const id = req.params.id;
+
+  try {
+    // Buscar el usuario existente en la base de datos
+    const userDetails = await user.findByPk(id);
+
+    if (!userDetails) {
+      return res.status(404).json({ msg: 'El usuario no existe' });
+    }
+    res.json({
+      user: userDetails,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      msg: error.errors
+    });
+  }
+};
+
+
 module.exports = {
     userGet,
     userPost,
@@ -353,5 +375,6 @@ module.exports = {
     getSubordinateUsers,
     listRol,
     userInfo,
-    userCreatePost
+    userCreatePost,
+    userDetails
 }

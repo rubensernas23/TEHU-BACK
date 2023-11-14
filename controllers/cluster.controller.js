@@ -1,7 +1,6 @@
 const { response } = require('express');
 const cluster = require('../models/cluster');
 const db = require('../db/connection');
-const { queries } = require('@testing-library/react');
 const { post } = require('../routes/cluster.routes');
 
 const clusterlist = async (req, res = response) => {
@@ -37,8 +36,12 @@ const clusterGet = async (req, res = response) => {
 }
 
 const clusterPost = async (req, res = response) => {
+
     try {
         const {name, companyId, deviceId, devices} = req.body 
+        res.json({
+            msg: deviceId
+        })
         const newCluster = await cluster.create({
             name, 
             companyId, 
