@@ -15,7 +15,7 @@ router.get("/list/:id", getSubordinateUsers);
 
 router.put("/", [validarJWT], userPut);
 
-router.get("/:id", [validarJWT], userDetails);
+router.get("/details", [validarJWT], userDetails);
 
 router.get("/currency", [
     validarJWT
