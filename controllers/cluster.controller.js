@@ -1,8 +1,5 @@
 const { response } = require('express');
 const cluster = require('../models/cluster');
-const db = require('../db/connection');
-const { queries } = require('@testing-library/react');
-const { post } = require('../routes/cluster.routes');
 
 const clusterlist = async (req, res = response) => {
     try {
@@ -10,6 +7,7 @@ const clusterlist = async (req, res = response) => {
         const query = await cluster.findAll({
         where: {
             companyId: id,
+            
         },
         attributes: ['id', 'name','devices']
         })
@@ -36,6 +34,47 @@ const clusterlist = async (req, res = response) => {
         })
     }    
 }
+const clusterusers = async (req, res = response) => {
+    try {
+        const id = req.params.id
+        const query = await cluster.findAll({
+        where: {
+           companyId: id,
+            
+        },
+        attributes: ['id', 'name','devices']
+        })
+        //console.log(query);
+        const list = []
+        query.forEach((item) => {
+            //console.log(hola);
+            const cadena = item.devices
+            const c = cadena.replace('[', '');
+            const c1 = c.replace(']', '');
+            const arr = c1.split(',');
+            const devices_count = arr.length;
+            //console.log(devices_count);
+            
+            
+            list.push({
+                "id": item.id,
+                "name": item.name,
+                //"devices": item.devices,
+                "devices_count": devices_count
+                //"users_count": users_count
+            })
+
+        })
+       // console.log(users);
+        res.json({
+           list
+        })
+    }catch(error){
+        res.status(500).json({
+            msg: error.errors,
+        })
+    }    
+}
 
 const clusterGet = async (req, res = response) => {
     try {
@@ -49,15 +88,16 @@ const clusterGet = async (req, res = response) => {
         })
     }
 }
-
 const clusterPost = async (req, res = response) => {
+
     try {
-        const {name, companyId, deviceId, devices} = req.body 
+        const {name, companyId, users, devices} = req.body 
+        
         const newCluster = await cluster.create({
             name, 
             companyId, 
-            deviceId,
             devices,
+            users
         })
         res.json({
             msg: "Se creo exitosamente.",
@@ -70,10 +110,11 @@ const clusterPost = async (req, res = response) => {
     }
 }
 
+
 const clusterput = async (req, res ) => {
     try {
-        const {id, name, companyId, deviceId,} = req.body
-        const query = await cluster.update({name, companyId, deviceId,}, {
+        const {id, name, devices, users} = req.body
+        const query = await cluster.update({name, devices, users }, {
             where: {
                 id: id
             }
@@ -112,30 +153,6 @@ const clusterDelete = async (req, res = response) => {
     }
 }  
 
-const clustertable = async (req, res ) => {
-    try {
-        const {id, devices} = req.body
-        const query = await cluster.update({devices}, {
-            where: {
-                id: id,
-            }
-        })
-        if (query){
-            res.json({
-                msg: "El grupo se actualizo correctamente.",
-            })
-        } else {
-            res.json({
-                msg: "Error en las IDs de compañia o dispositivo",
-            })
-        }
-    } catch(error){
-        res.status(500).json({
-         msg: error.errors
-        })
-    }
-}
-
 
 module.exports = {
     clusterGet,
@@ -143,6 +160,8 @@ module.exports = {
     clusterDelete,
     clusterput,
     clusterlist,
-    clustertable
+    clusterusers,
+  
+    
 }
     
