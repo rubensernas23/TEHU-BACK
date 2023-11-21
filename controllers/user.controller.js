@@ -69,7 +69,7 @@ const userPost = async (req, res = response) => {
 };
 
 const userCreatePost = async (req, res = response) => {
-  const { name, phone, email, password, authenticated, rolId, identificationType, identificationNumber } = req.body;
+  const { name, phone, email, authenticated, rolId, identificationType, identificationNumber } = req.body;
   const token = req.header('token');
   if (!token) {
     return res.status(401).json({ msg: 'Token de autenticación no proporcionado' });
@@ -88,7 +88,6 @@ const userCreatePost = async (req, res = response) => {
       name,
       phone,
       email,
-      password: hashedPassword,
       authenticated,
       rolId,
       identificationType,
@@ -345,6 +344,35 @@ const userInfo = async (req, res = response) => {
   }
 };
 
+const userDetails = async (req, res = response) => {
+
+  const token = req.header('token');
+  if (!token) {
+    return res.status(401).json({ msg: 'Token de autenticación no proporcionado' });
+  }
+  const userload = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
+  const userId= userload.uid
+
+
+  try {
+    // Buscar el usuario existente en la base de datos
+    const userDetails = await user.findByPk(userId);
+
+    if (!userDetails) {
+      return res.status(404).json({ msg: 'El usuario no existe' });
+    }
+    res.json({
+      user: userDetails,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      msg: error.errors
+    });
+  }
+};
+
+
 module.exports = {
     userGet,
     userPost,
@@ -353,5 +381,6 @@ module.exports = {
     getSubordinateUsers,
     listRol,
     userInfo,
-    userCreatePost
+    userCreatePost,
+    userDetails
 }

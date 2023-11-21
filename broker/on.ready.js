@@ -13,9 +13,9 @@ const brokerReady = (broker) => {
   broker.on("clientConnected", async (cliente) => {
     //console.log(cliente);
     //console.log("dispositivo con id: ", cliente);
-    /* const searchDevice = await device.findOne({ where: { name: cliente.id } });
+    const searchDevice = await device.findOne({ where: { name: cliente.id } });
     if (!searchDevice) {
-      //device_data(cliente.id)
+      device_data(cliente.id)
       const newdevice = {
         name: cliente.id,
         status: true,
@@ -23,12 +23,12 @@ const brokerReady = (broker) => {
         online: 0
       };
       const createNewdevice = await device.create(newdevice);
-    } */
+    } 
   });
 
   broker.on("published", async (packet) => {
     //console.log('packet', packet);
-    /* const topicName = packet.topic;
+   /*  const topicName = packet.topic;
     const dataTopic = await JSON.parse(packet.payload);
     const { id } = dataTopic;
 

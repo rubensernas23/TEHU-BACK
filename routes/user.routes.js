@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { userGet, userPost, userPut, getSubordinateUsers, userDelete, listRol, userInfo, userCreatePost } = require("../controllers/user.controller");
+const { userGet, userPost, userPut, getSubordinateUsers, userDelete, listRol, userInfo, userCreatePost, userDetails } = require("../controllers/user.controller");
 
 const { validarJWT } = require("../middlewares/validar-jwt");
 
@@ -14,6 +14,8 @@ router.get("/", [
 router.get("/list/:id", getSubordinateUsers);
 
 router.put("/", [validarJWT], userPut);
+
+router.get("/details", [validarJWT], userDetails);
 
 router.get("/currency", [
     validarJWT
