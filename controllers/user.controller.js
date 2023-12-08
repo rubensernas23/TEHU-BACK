@@ -69,7 +69,7 @@ const userPost = async (req, res = response) => {
 };
 
 const userCreatePost = async (req, res = response) => {
-  const { name, phone, email, authenticated, rolId, identificationType, identificationNumber } = req.body;
+  const { name, phone, email, rolId, identificationType, identificationNumber } = req.body;
   const token = req.header('token');
   if (!token) {
     return res.status(401).json({ msg: 'Token de autenticación no proporcionado' });
@@ -83,7 +83,8 @@ const userCreatePost = async (req, res = response) => {
   });
    
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    //const hashedPassword = await bcrypt.hash(password, 10);
+    const authenticated = false
     const newUser = await user.create({
       name,
       phone,
@@ -110,7 +111,7 @@ const userCreatePost = async (req, res = response) => {
         company: newUser.company
       }
     });
-    SendPass(email, password, newUser.id)
+    SendPass(email, newUser.id)
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -353,16 +354,39 @@ const userDetails = async (req, res = response) => {
   const userload = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
   const userId= userload.uid
 
-
   try {
     // Buscar el usuario existente en la base de datos
-    const userDetails = await user.findByPk(userId);
+    const userDetails = await user.findAll({
+      where: {
+        id: userId,
+      },
+      attributes: ['name','phone', 'email', 'rolId' ]
+    });
+
+
+  /*   res.json({
+      "rol": userDetails
+    }); */
+
+    const roles = await rol.findAll({
+      where: {
+        id: userDetails.rolId
+      },
+      attributes: ['id', 'Name']
+    });
+    
+    res.json({
+      "rol": roles
+    });
 
     if (!userDetails) {
       return res.status(404).json({ msg: 'El usuario no existe' });
     }
     res.json({
-      user: userDetails,
+      "name": userDetails.name,
+      "phone": userDetails.phone,
+      "email": userDetails.email,
+      "rol": rol.name
     });
   } catch (error) {
     console.log(error);
