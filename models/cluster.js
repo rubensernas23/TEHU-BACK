@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const db = require("../db/connection");
 const Company = require("./company");
-const Device = require("./device");
+const company = require("./company");
 
 const cluster = db.define("cluster", {
   id: {
@@ -20,20 +20,15 @@ const cluster = db.define("cluster", {
         key: 'id',
     },
   },
-  deviceId: {
-    type: DataTypes.INTEGER,
-    references: {
-        model: Device,
-        key: 'id',
-    },
-  },
   devices: {
     type: DataTypes.STRING,
-  }
+  },
+  users:{
+    type: DataTypes.STRING,
+  },
 });
 
 cluster.belongsTo(Company, { foreignKey: 'companyId' });
-cluster.belongsTo(Device, { foreignKey: 'deviceId' });
 
 cluster.sync()
   

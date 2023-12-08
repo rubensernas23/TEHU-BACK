@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { clusterGet, clusterPost, clusterDelete, clusterput, clusterlist, clustertable} = require("../controllers/cluster.controller");
+const { clusterGet, clusterDelete, clusterput, clusterlist, clusterusers, clusterPost} = require("../controllers/cluster.controller");
 
 
 const router = Router();
@@ -10,7 +10,6 @@ router.get("/",[
 router.post("/create/",[
     
 ], clusterPost);
-
 
 router.delete("/delete/:id",[
     
@@ -24,9 +23,10 @@ router.get("/list/:id", [
     
 ], clusterlist);
 
-router.put("/update/:id",[
+router.get("/users/:id", [
     
-], clustertable);
+], clusterusers);
+
 
 
 
