@@ -77,8 +77,9 @@ class ServerTehu {
     http.createServer(httpApp).listen(8081);
 
     const httpsServer = https.createServer(credentials, this.app);
-
-    httpsServer.listen(this.port, () => {
+    
+    //httpsServer.listen(this.port, () => {
+    this.app.listen(this.port, () => {
       console.log(`Servidor HTTPS escuchando en el puerto ${this.port}!`);
     });
   }
