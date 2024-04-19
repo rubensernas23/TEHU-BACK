@@ -56,6 +56,7 @@ class ServerTehu {
   }
 
   broker() {
+    //console.log("this.mosca", this.mosca);
     brokerReady(this.mosca);
   }
 
@@ -71,9 +72,9 @@ class ServerTehu {
 
     // Creación de servidores HTTP y HTTPS
     const httpApp = express();
-    httpApp.get('*', (req, res) => {
+  /*   httpApp.get('*', (req, res) => {
       res.redirect(`https://${req.headers.host}${req.url}`);
-    });
+    }); */
     http.createServer(httpApp).listen(8081);
 
     const httpsServer = https.createServer(credentials, this.app);

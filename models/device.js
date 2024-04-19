@@ -20,12 +20,18 @@ const device = db.define("device", {
   online: {
     type: DataTypes.BOOLEAN
   },
-  // id_data: {
-  //   type: DataTypes.INTEGER,
-  // }
- /*  progress: {
-    type: DataTypes.INTEGER
-  }, */
+  lgn_start: {
+    type: DataTypes.STRING
+  },
+  lat_start: {
+    type: DataTypes.STRING
+  },
+  lgn_end: {
+    type: DataTypes.STRING
+  },
+  lat_end: {
+    type: DataTypes.STRING
+  },
 });
 
 device.sync()

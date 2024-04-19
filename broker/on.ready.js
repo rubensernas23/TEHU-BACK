@@ -5,42 +5,44 @@ const topicos = require("../models/topicos");
 const device_data = require("../models/device_data");
 
 const brokerReady = (broker) => {
-  // este evento se ejcuta cuando el server esta on
+  let  client_id = ''
   broker.on("ready", () => {
     console.log("Broker mosca is ready..", process.env.PORT2);
   });
 
-  broker.on("clientConnected", async (cliente) => {
-    //console.log(cliente);
-    //console.log("dispositivo con id: ", cliente);
-    const searchDevice = await device.findOne({ where: { name: cliente.id } });
+  broker.on("clientConnected", async (client) => {
+    client_id  = client.id.replace(/-/g, '_');
+    const searchDevice = await device.findOne({ where: { name: client_id} });
     if (!searchDevice) {
-      device_data(cliente.id)
+      device_data(client_id)
       const newdevice = {
-        name: cliente.id,
+        name: client_id,
         status: true,
-        type: 0,
-        online: 0
+        online: true,
+        type: 1
       };
       const createNewdevice = await device.create(newdevice);
-    } 
+    }
   });
 
   broker.on("published", async (packet) => {
-    //console.log('packet', packet);
-   /*  const topicName = packet.topic;
-    const dataTopic = await JSON.parse(packet.payload);
-    const { id } = dataTopic;
-
-    const tableName = id;
+    const topicName = packet.topic
+    const payload = packet.payload
+    const cleanedDataString = payload.replace(/nan/g, 'null');
+    const dataObject = JSON.parse(cleanedDataString)
+    console.log("dataObject", dataObject);
     const valuesToInsert = {
-      id: dataTopic.id,
       topic: topicName,
-      id_device: JSON.parse(packet.payload).id,
-      data: packet.payload
+      temp1: dataObject.temp1,
+      h: dataObject.h,
+      temp2: dataObject.temp2,
+      temp3: dataObject.temp3,
+      lat: dataObject.lat,
+      lon: dataObject.lon,
+      rssi: dataObject.rssi,
+      bat: dataObject.bat,
     };
-
-    const frs = await device_data(id).create(valuesToInsert) */
+    const frs = await device_data(client_id).create(valuesToInsert)
   });
 };
 

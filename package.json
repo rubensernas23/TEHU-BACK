@@ -24,10 +24,11 @@
     "multer": "^1.4.5-lts.1",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.9.3",
+    "pm2": "^5.3.1",
     "sequelize": "^6.21.3",
-    "uniqid": "^5.4.0"
+    "uniqid": "^5.4.0",
+    "ws": "^8.16.0"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rubensernas23/TEHU-BACK.git"
@@ -35,5 +36,8 @@
   "bugs": {
     "url": "https://github.com/rubensernas23/TEHU-BACK/issues"
   },
-  "homepage": "https://github.com/rubensernas23/TEHU-BACK#readme"
+  "homepage": "https://github.com/rubensernas23/TEHU-BACK#readme",
+  "devDependencies": {
+    "sequelize-cli": "^6.6.2"
+  }
 }

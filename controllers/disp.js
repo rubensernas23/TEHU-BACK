@@ -5,6 +5,7 @@ const topicos = require('../models/topicos');
 
 const dispGet = async (req, res = response) => {
     const disp = await dispositivos.findAll()
+    console.log(disp);
     const top = await topicos.findAll()
     res.json({
         disp,

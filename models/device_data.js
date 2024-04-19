@@ -10,14 +10,38 @@ const device_data = (modelName) => {
         primaryKey: true,
         autoIncrement: true,
       },
+      temp1: {
+        type: DataTypes.STRING, 
+      },
+      h: {
+        type: DataTypes.STRING, 
+      },
+      temp2: {
+        type: DataTypes.STRING, 
+      },
+      temp3: {
+        type: DataTypes.STRING, 
+      },
+      lat: {
+        type: DataTypes.STRING, 
+      },
+      lon: {
+        type: DataTypes.STRING, 
+      },
+      rssi: {
+        type: DataTypes.STRING, 
+      },
+      bat:{
+        type: DataTypes.STRING, 
+      },
       topic: {
         type: DataTypes.STRING,
       },
       data: {
-        type: DataTypes.STRING, // Cambia esto según el tipo de datos correcto
+        type: DataTypes.STRING, 
       },
       id_device: {
-        type: DataTypes.STRING, // Cambia esto según el tipo de datos correcto
+        type: DataTypes.STRING, 
       }
     },
     {
