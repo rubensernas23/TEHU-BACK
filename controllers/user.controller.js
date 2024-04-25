@@ -333,6 +333,7 @@ const userInfo = async (req, res = response) => {
       name: currency.name,
       phone: currency.phone,
       email: currency.email,
+      rolId: currency.rolId,
       position: currency.position,
       identificationType: currency.identificationType,
       identificationNumber: currency.identificationNumber,
