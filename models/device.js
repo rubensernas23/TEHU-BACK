@@ -20,6 +20,12 @@ const device = db.define("device", {
   online: {
     type: DataTypes.BOOLEAN
   },
+  origin: {
+    type: DataTypes.STRING
+  },
+  destination: {
+    type: DataTypes.STRING
+  },
   lgn_start: {
     type: DataTypes.STRING
   },
