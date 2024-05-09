@@ -28,8 +28,8 @@ const deviceGet = async (req, res = response) => {
 
 const devicePut = async (req, res ) => {
     try {
-        const {id, name, status, type, online} = req.body
-        const query = await device.update({name, status, type, online }, {
+        const {id, name, status, type, online, origin, destination} = req.body
+        const query = await device.update({name, status, type, online, origin, destination }, {
             where: {
                 id: id
             }
