@@ -26,18 +26,6 @@ const device = db.define("device", {
   destination: {
     type: DataTypes.STRING
   },
-  lgn_start: {
-    type: DataTypes.STRING
-  },
-  lat_start: {
-    type: DataTypes.STRING
-  },
-  lgn_end: {
-    type: DataTypes.STRING
-  },
-  lat_end: {
-    type: DataTypes.STRING
-  },
 });
 
 device.sync()
