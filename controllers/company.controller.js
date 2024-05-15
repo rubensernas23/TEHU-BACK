@@ -57,7 +57,29 @@ const companyCreatePost = async (req, res = response) => {
     }
 };
 
+const getCompany = async (req, res = response) => {
+  const id = req.params.id
+  const token = req.header('token');
+  
+  if (!token) {
+    return res.status(401).json({ msg: 'Token de autenticación no proporcionado' });
+  }
+
+  try {
+    const companies = await company.findByPk(id)
+    res.json({
+      companies
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      msg: error.errors,
+    });
+  } 
+}
+
 module.exports = {
-    companyGet,
-    companyCreatePost
+  companyGet,
+  companyCreatePost,
+  getCompany
 }
