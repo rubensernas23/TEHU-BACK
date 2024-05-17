@@ -1,5 +1,25 @@
 const { response } = require('express');
 const device = require('../models/device');
+const WebSocket = require('ws');
+
+/* const wss = new WebSocket.Server({ port: 8080 });
+
+// Manejar eventos de publicación MQTT
+const handleMQTTPublishedEvent = (broker) => {
+    broker.on("published", async (packet) => {
+        // Insertar datos en la base de datos
+
+        // Después de la inserción, enviar datos al cliente a través de WebSocket
+        wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                const message = {
+                    temp2: dataObject.temp2 // Suponiendo que aquí están los datos que deseas enviar
+                };
+                client.send(JSON.stringify(message));
+            }
+        });
+    });
+} */
 
 const devicesGet = async (req, res = response) => {
     const devices = await device.findAll();
@@ -66,6 +86,29 @@ const getLastDevices = async (req, res = response) => {
                 company_id: company_id,
                 online: 1
             },
+            limit: 4,
+        });
+        res.json({
+            devices
+        })
+
+    } catch(error){
+        res.status(500).json({
+         msg: error.errors
+        })
+    }
+}
+
+const getLastDevicesHome = async (req, res = response) => {
+    const company_id = req.header('company_id');
+
+    try {
+        const devices = await device.findAll({
+            attributes: ['id', 'name', 'company_id', 'online', 'origin', 'destination'],
+            where: {
+                company_id: company_id,
+            },
+            limit: 8,
         });
         res.json({
             devices
@@ -82,5 +125,6 @@ module.exports = {
     devicesGet,
     deviceGet,
     devicePut,
-    getLastDevices
+    getLastDevices,
+    getLastDevicesHome
 }

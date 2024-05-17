@@ -3,6 +3,9 @@ const db = require("../db/connection");
 const device = require("../models/device");
 const topicos = require("../models/topicos");
 const device_data = require("../models/device_data");
+const WebSocket = require('ws');
+
+const wss = new WebSocket.Server({ port: 5000 });
 
 const brokerReady = (broker) => {
   let  client_id = ''
@@ -43,6 +46,17 @@ const brokerReady = (broker) => {
       bat: dataObject.bat,
     };
     const frs = await device_data(client_id).create(valuesToInsert)
+
+
+    wss.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        const message = {
+          temp2: dataObject.temp2,
+          client_id: client_id
+        };
+        client.send(JSON.stringify(message));
+      }
+    });
   });
 };
 
