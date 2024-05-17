@@ -29,7 +29,13 @@ const deviceGet = async (req, res = response) => {
 const devicePut = async (req, res ) => {
     try {
         const {id, name, status, type, online, origin, destination, destinationLatLng, company_id} = req.body
-        const query = await device.update({name, status, type, online, origin, destination, company_id, lat_end: destinationLatLng.lat, lgn_end: destinationLatLng.lng }, {
+        let lat_end = null;
+        let lgn_end = null
+        if(destinationLatLng) {
+            lat_end =  destinationLatLng.lat;
+            lgn_end = destinationLatLng.lng
+        }
+        const query = await device.update({name, status, type, online, origin, destination, company_id, lat_end, lgn_end }, {
             where: {
                 id: id
             }
