@@ -104,7 +104,7 @@ const getLastDevicesHome = async (req, res = response) => {
 
     try {
         const devices = await device.findAll({
-            attributes: ['id', 'name', 'company_id', 'online', 'origin', 'destination'],
+            attributes: ['id', 'name', 'company_id', 'online', 'status'],
             where: {
                 company_id: company_id,
             },
