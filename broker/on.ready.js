@@ -43,7 +43,7 @@ const brokerReady = (broker) => {
       lat: dataObject.lat,
       lon: dataObject.lon,
       rssi: dataObject.rssi,
-      bat: dataObject.bat,
+      bat: dataObject.bat
     };
     const frs = await device_data(client_id).create(valuesToInsert)
 
@@ -52,7 +52,15 @@ const brokerReady = (broker) => {
       if (client.readyState === WebSocket.OPEN) {
         const message = {
           temp2: dataObject.temp2,
-          client_id: client_id
+          bat: dataObject.bat,
+          topic: dataObject.topicName,
+          temp1: dataObject.temp1,
+          h: dataObject.h,
+          temp3: dataObject.temp3,
+          lat: dataObject.lat,
+          lon: dataObject.lon,
+          rssi: dataObject.rssi,
+          bat: dataObject.bat
         };
         client.send(JSON.stringify(message));
       }

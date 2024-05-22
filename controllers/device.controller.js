@@ -63,6 +63,7 @@ const devicePut = async (req, res ) => {
         if (query){
             res.json({
                 msg: "El device se actualizo correctamente.",
+                status: 200
             })
         } else {
             res.json({
@@ -81,7 +82,6 @@ const getLastDevices = async (req, res = response) => {
 
     try {
         const devices = await device.findAll({
-            attributes: ['id', 'name', 'company_id', 'online', 'origin', 'destination'],
             where: {
                 company_id: company_id,
                 online: 1
@@ -104,7 +104,7 @@ const getLastDevicesHome = async (req, res = response) => {
 
     try {
         const devices = await device.findAll({
-            attributes: ['id', 'name', 'company_id', 'online', 'status'],
+            attributes: ['id', 'name', 'company_id', 'type'],
             where: {
                 company_id: company_id,
             },
