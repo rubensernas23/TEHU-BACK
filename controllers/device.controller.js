@@ -120,11 +120,18 @@ const getLastDevicesHome = async (req, res = response) => {
         })
     }
 }
+const getStatistics = async (req, res = response) => {
+    res.json({
+        "msg": "hele"
+    })
 
+
+}
 module.exports = {
     devicesGet,
     deviceGet,
     devicePut,
     getLastDevices,
-    getLastDevicesHome
+    getLastDevicesHome,
+    getStatistics
 }

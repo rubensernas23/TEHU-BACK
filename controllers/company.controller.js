@@ -1,5 +1,6 @@
 const { response } = require('express');
 const company = require('../models/company');
+const device = require('../models/device');
 
 const companyGet = async (req, res = response) => {
     const companies = await company.findAll();
@@ -65,10 +66,18 @@ const getCompany = async (req, res = response) => {
     return res.status(401).json({ msg: 'Token de autenticación no proporcionado' });
   }
 
+
   try {
     const companies = await company.findByPk(id)
+
+    const deviceCount = await device.count({
+      where: {
+        company_id: id,
+      },
+    });
     res.json({
-      companies
+      companies,
+      deviceCount
     })
   } catch (error) {
     console.log(error);
