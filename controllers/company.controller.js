@@ -77,7 +77,12 @@ const getCompany = async (req, res = response) => {
     });
     res.json({
       companies,
-      deviceCount
+      deviceCount,
+      notifications_alerts: "1550",
+      positive_alerts: "1472",
+      negative_alerts: "78",
+      positive_alerts_percentage: "95",
+      negative_alerts_percentage: "5"
     })
   } catch (error) {
     console.log(error);
