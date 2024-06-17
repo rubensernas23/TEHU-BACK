@@ -11,6 +11,9 @@ const device = db.define("device", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  nameour: {
+    type: DataTypes.STRING,
+  },
   status: {
     type: DataTypes.BOOLEAN
   },
