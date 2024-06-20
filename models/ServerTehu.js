@@ -22,6 +22,7 @@ class ServerTehu {
     this.company = "/company";
     this.cluster = "/cluster";
     this.device = "/device";
+    this.temperature = "/temperature";
 
     // modelos
     this.dbConnection();
@@ -53,6 +54,7 @@ class ServerTehu {
     this.app.use(this.company, require("../routes/company.routes"));
     this.app.use(this.cluster, require("../routes/cluster.routes"));
     this.app.use(this.device, require("../routes/device.routes"));
+    this.app.use(this.temperature, require("../routes/temperature.routes"));
   }
 
   broker() {
