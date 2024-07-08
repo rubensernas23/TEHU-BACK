@@ -1,25 +1,48 @@
 const { response } = require('express');
 const device = require('../models/device');
+const devicedata = require('../models/device_data');
 const WebSocket = require('ws');
+const { sequelize } = require('../db/connection'); 
+const { QueryTypes } = require('sequelize');
+const device_data = require("../models/device_data");
 
-/* const wss = new WebSocket.Server({ port: 8080 });
+const deviceData = require('../models/device_data');
 
-// Manejar eventos de publicación MQTT
-const handleMQTTPublishedEvent = (broker) => {
-    broker.on("published", async (packet) => {
-        // Insertar datos en la base de datos
 
-        // Después de la inserción, enviar datos al cliente a través de WebSocket
-        wss.clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                const message = {
-                    temp2: dataObject.temp2 // Suponiendo que aquí están los datos que deseas enviar
-                };
-                client.send(JSON.stringify(message));
-            }
+// Función para crear un nuevo dispositivo
+const createDevice = async (req, res) => {
+  const { name, nameour, status, type, online, lgn_end, lat_end, origin, company_id, destination } = req.body;
+
+  try {
+    const searchDevice = await device.findOne({ where: { name: name} });
+    if (!searchDevice){
+        console.log(searchDevice);
+        const newDevice = await device.create({
+          name,
+          nameour,
+          status,
+          type,
+          online,
+          lgn_end,
+          lat_end,
+          origin,
+          company_id,
+          destination,
         });
-    });
-} */
+        device_data(name)    
+        res.status(200).json(newDevice);
+    } else {
+        res.status(201).json({
+            msg: "The device already exists!"
+        });
+    }
+   
+  } catch (error) {
+    // Manejo de errores
+    console.error('Error creating device:', error);
+    res.status(500).json({ error: 'Error creating device' });
+  }
+};
 
 const devicesGet = async (req, res = response) => {
     const devices = await device.findAll();
@@ -88,7 +111,7 @@ const getLastDevices = async (req, res = response) => {
             },
             limit: 4,
         });
-        res.json({
+        res.status(200).json({
             devices
         })
 
@@ -120,18 +143,40 @@ const getLastDevicesHome = async (req, res = response) => {
         })
     }
 }
+
+const getAllFromTable = async (req, res) => {
+    const deviceName = req.params.deviceName;
+    const modelName = `${deviceName}s`;
+    const DeviceModel = deviceData(modelName);
+
+    try {
+        const deviceData = await DeviceModel.findAll({
+            attributes: ['id', 'temp2', 'bat', 'updatedAt'],
+        });
+
+        res.json({
+            deviceData
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: `Error retrieving data from ${modelName}: ${error.message}`
+        });
+    }
+};
+
 const getStatistics = async (req, res = response) => {
     res.json({
         "msg": "hele"
     })
-
-
 }
+
 module.exports = {
     devicesGet,
     deviceGet,
     devicePut,
     getLastDevices,
     getLastDevicesHome,
-    getStatistics
+    getStatistics,
+    getAllFromTable,
+    createDevice
 }
