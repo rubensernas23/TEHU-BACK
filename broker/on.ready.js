@@ -15,9 +15,8 @@ const brokerReady = (broker) => {
 
   broker.on("clientConnected", async (client) => {
     client_id  = client.id.replace(/-/g, '_');
-    console.log("here", client.topic);
-    //const searchDevice = await device.findOne({ where: { name: client_id} });
-    /* if (!searchDevice) {
+    const searchDevice = await device.findOne({ where: { name: client_id} });
+    if (!searchDevice) {
       device_data(client_id)
       const newdevice = {
         name: client_id,
@@ -26,7 +25,7 @@ const brokerReady = (broker) => {
         type: 1
       };
       const createNewdevice = await device.create(newdevice);
-    } */
+    }
   });
 
   broker.on("published", async (packet) => {
@@ -35,44 +34,37 @@ const brokerReady = (broker) => {
     const cleanedDataString = payload.replace(/nan/g, 'null');
     const dataObject = JSON.parse(cleanedDataString)
     console.log("dataObject", dataObject);
-    console.log(client_id);
-    console.log(topicName);
+    const valuesToInsert = {
+      topic: topicName,
+      temp1: dataObject.temp1,
+      h: dataObject.h,
+      temp2: dataObject.temp2,
+      temp3: dataObject.temp3,
+      lat: dataObject.lat,
+      lon: dataObject.lon,
+      rssi: dataObject.rssi,
+      bat: dataObject.bat
+    };
+    const frs = await device_data(client_id).create(valuesToInsert)
 
-    const searchDevice = await device.findOne({ where: { name: topicName} });
 
-    console.log("searchDevice", searchDevice);
-
-    if(searchDevice){
-      const valuesToInsert = {
-        topic: topicName,
-        temp1: dataObject.temp1,
-        h: dataObject.h,
-        temp2: dataObject.temp2,
-        temp3: dataObject.temp3,
-        lat: dataObject.lat,
-        lon: dataObject.lon,
-        rssi: dataObject.rssi,
-        bat: dataObject.bat
-      };
-      const topicNameWithS = topicName + 's';
-      const frs = await device_data(topicNameWithS).create(valuesToInsert);
-      console.info(frs);
-      wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-          const message = {
-            temp2: dataObject.temp2,
-            bat: dataObject.bat,
-            topic: dataObject.topicName,
-            temp1: dataObject.temp1,
-            h: dataObject.h,
-            lat: dataObject.lat,
-            lon: dataObject.lon,
-            rssi: dataObject.rssi
-          };
-          client.send(JSON.stringify(message));
-        }
-      });
-    }
+    wss.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        const message = {
+          temp2: dataObject.temp2,
+          bat: dataObject.bat,
+          topic: dataObject.topicName,
+          temp1: dataObject.temp1,
+          h: dataObject.h,
+          temp3: dataObject.temp3,
+          lat: dataObject.lat,
+          lon: dataObject.lon,
+          rssi: dataObject.rssi,
+          bat: dataObject.bat
+        };
+        client.send(JSON.stringify(message));
+      }
+    });
   });
 };
 
