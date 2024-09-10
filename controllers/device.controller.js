@@ -1,12 +1,13 @@
 const { response } = require('express');
 const device = require('../models/device');
-const devicedata = require('../models/device_data');
-const WebSocket = require('ws');
+const { Op } = require('sequelize');
+const device_data = require("../models/device_data");
+const deviceData = require('../models/device_data');
+
+
+
 const { sequelize } = require('../db/connection'); 
 const { QueryTypes } = require('sequelize');
-const device_data = require("../models/device_data");
-
-const deviceData = require('../models/device_data');
 
 
 // Función para crear un nuevo dispositivo
@@ -45,24 +46,43 @@ const createDevice = async (req, res) => {
 };
 
 const devicesGet = async (req, res = response) => {
-    const devices = await device.findAll();
-
-    res.json({
-        devices
-    })
-}
+    const company_id = req.header('company_id');
+    try {
+    
+        if (!company_id) {
+          return res.status(400).json({
+            msg: 'El parámetro company_id es obligatorio',
+          });
+        }    
+        const devices = await device.findAll({
+          where: {
+            company_id: company_id
+          }
+        });
+    
+        res.json({
+          devices
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            msg: 'Error al obtener dispositivos',
+        });
+    }
+    
+};
 
 const deviceGet = async (req, res = response) => {
     const did = req.params.did
-    console.log(did);
-   /*  const devices = await device.findByPk(did, {
-        attributes: ['id', 'name','status']
-    }); */
-    const device_info = await device.findByPk(did);
+    const company_id = req.params.company_id
 
-    if (!device_info) {
-        return res.status(404).json({ msg: 'Usuario no encontrado' });
-    }
+    const device_info = await device.findOne({
+        where: {
+          id: did,
+          company_id: company_id // Filtro adicional por company_id
+        },
+        attributes: ['id', 'name', 'status'] // Especifica las columnas que deseas retornar
+    });
   
     res.json({
         device_info
@@ -170,6 +190,87 @@ const getStatistics = async (req, res = response) => {
     })
 }
 
+const getDevicesByCompanyId = async (req, res) => {
+  try {
+    const company_id = req.header('company_id');
+    const type = req.header('type');
+    const online = req.header('online');
+
+    console.log("company_id", company_id);
+    
+
+    if (!company_id) {
+      return res.status(400).json({
+        msg: 'El parámetro company_id es obligatorio',
+      });
+    }
+
+    const whereClause = { company_id };
+
+    if (type) {
+      if (type.startsWith('!')) {
+        whereClause.type = { [Op.ne]: type.substring(1) };
+      } else {
+        whereClause.type = type;
+      }
+    }
+
+    if (online !== undefined) {
+      whereClause.online = online === 'true';
+    }
+
+    const devices = await device.findAll({ where: whereClause });
+
+    // Verificar si se encontraron dispositivos
+    if (devices.length === 0) {
+      return res.status(404).json({
+        msg: 'No se encontraron dispositivos para los filtros especificados',
+      });
+    }
+
+    // Devolver los dispositivos filtrados
+    res.json(devices);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      msg: 'Error al obtener dispositivos',
+    });
+  }
+};
+
+const getDynamicTableData = async (req, res) => {
+  
+    const deviceName = req.header('base_name');
+    const modelName = `${deviceName}s`;
+    const startDate = req.header('start_date'); // "2024-09-05 21:29:09" obtenido desde un header
+    const endDate = req.header('end_date'); // "2024-09-05 22:13:23" obtenido desde un header
+    const DeviceModel = deviceData(modelName);
+
+    try {
+     
+        const whereClause = {};
+    
+        if (startDate && endDate) {
+          whereClause.updatedAt = { // Cambia 'createdAt' por el nombre de tu campo de fecha
+            [Op.between]: [startDate, endDate]
+          };
+        }
+
+        const data = await DeviceModel.findAll({
+            attributes: ['id', 'temp2', 'bat', 'updatedAt'],
+            where: whereClause,
+          });
+
+        res.json({
+            data
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: `Error retrieving data from ${modelName}: ${error.message}`
+        });
+    }
+};
+
 module.exports = {
     devicesGet,
     deviceGet,
@@ -178,5 +279,7 @@ module.exports = {
     getLastDevicesHome,
     getStatistics,
     getAllFromTable,
-    createDevice
+    createDevice,
+    getDevicesByCompanyId,
+    getDynamicTableData
 }
